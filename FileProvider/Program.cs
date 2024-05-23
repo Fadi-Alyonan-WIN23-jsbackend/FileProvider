@@ -1,4 +1,8 @@
+using Azure.Storage.Blobs;
+using Data.Contexts;
+using FileProvider.Services;
 using Microsoft.Azure.Functions.Worker;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 
@@ -8,7 +12,12 @@ var host = new HostBuilder()
     {
         services.AddApplicationInsightsTelemetryWorkerService();
         services.ConfigureFunctionsApplicationInsights();
-        services.
+        services.AddDbContext<DataContext>(options =>
+        {
+            options.UseSqlServer(Environment.GetEnvironmentVariable("SqlServer"));
+        });
+        services.AddScoped<BlobServiceClient>(x => new BlobServiceClient(Environment.GetEnvironmentVariable("AzureStorageAccount")));
+        services.AddScoped<FileService>();
     })
     .Build();
 
