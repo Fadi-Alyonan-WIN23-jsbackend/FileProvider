@@ -12,7 +12,7 @@ public class FileService(DataContext context, ILogger<FileService> logger, BlobS
     private readonly ILogger<FileService> _logger = logger;
     private readonly DataContext _context = context;
     private readonly BlobServiceClient _client = client;
-    private BlobContainerClient _container;
+    private BlobContainerClient? _container;
 
     public async Task SetBlobContainerAsync(string containerName)
     {
@@ -33,10 +33,10 @@ public class FileService(DataContext context, ILogger<FileService> logger, BlobS
             ContentType = file.ContentType
         };
 
-        var blobClient = _container.GetBlobClient(fileEntity.FileName);
+        var blobClient = _container?.GetBlobClient(fileEntity.FileName);
 
         using var stream = file.OpenReadStream();
-        await blobClient.UploadAsync(stream, headers);
+        await blobClient!.UploadAsync(stream, headers);
 
         return blobClient.Uri.ToString();
     }
